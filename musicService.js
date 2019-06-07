@@ -3,7 +3,6 @@ const fileService = require('./fileservice');
 const resolveDiffs = function (originalSettings, newSettings, outputPath) {
 	try {
 		const resolvedSettings = originalSettings.mergeSettings(newSettings);
-		console.log('resolvedSettings', resolvedSettings);
 		fileService.saveFile(outputPath, JSON.stringify(resolvedSettings));
 	} catch (err) {
 		console.log('Error resolveDiffs: ', err);
@@ -17,18 +16,16 @@ class MusicSettings {
 		this.playlists = playlists || [];
 		this.songs = songs || [];
 	}
-
+	//Restricting to musicSettings objects only
 	mergeSettings(newSettings) {
-		let keys = Object.keys(newSettings);
+		let keys = ['users', 'playlists', 'songs'];
 		let diffs = {};
 		while(keys.length) {
 			let currentKey = keys.shift();
-			console.log(currentKey);
 			if (this[currentKey]) {
 				diffs[currentKey] = this[currentKey].getArrayDiffs(newSettings[currentKey]);
-			}
+			} else throw 'Invalid key provided';
 		}
-		console.log('diffs: ', diffs);
 		return new MusicSettings(diffs);
 	}
 
